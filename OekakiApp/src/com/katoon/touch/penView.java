@@ -163,12 +163,29 @@ public class penView extends View {
 	}
 
 	private void onTouchEventMoving(MotionEvent e){
+		Log.i(TAG,"onTouchEventMoving");
 		posx = e.getX();
-        posy = e.getY();
-        invalidate();
+		posy = e.getY();
+		
+		switch(e.getAction()){  
+		case MotionEvent.ACTION_DOWN: //最初のポイント  
+		case MotionEvent.ACTION_MOVE: //途中のポイント  
+			invalidate();
+			break;  
+		case MotionEvent.ACTION_UP: //最後のポイント  
+			saveBitmapCache();
+			break;  
+		}
+	}
+	
+	private void saveBitmapCache(){
+		 setDrawingCacheEnabled(true);
+		 bitmapCache = Bitmap.createBitmap(getDrawingCache());	//paintデータをbitmapで保存
+		 setDrawingCacheEnabled(false);
 	}
 	
 	private void onTouchEventDrowing(MotionEvent e){
+		Log.i(TAG,"onTouchEventDrowing");
 		switch(e.getAction()){  
 		 case MotionEvent.ACTION_DOWN: //最初のポイント  
 			 path = new Path();  
@@ -184,9 +201,7 @@ public class penView extends View {
 			 break;  
 		 case MotionEvent.ACTION_UP: //最後のポイント  
 			 path.lineTo(e.getX(), e.getY());  
-			 setDrawingCacheEnabled(true);
-			 bitmapCache = Bitmap.createBitmap(getDrawingCache());	//paintデータをbitmapで保存
-			 setDrawingCacheEnabled(false);
+			 saveBitmapCache();
 			 invalidate();
 			 break;  
 		 default:  

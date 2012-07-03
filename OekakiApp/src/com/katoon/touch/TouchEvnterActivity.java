@@ -49,6 +49,7 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.i(TAG,"onCreate");
 		super.onCreate(savedInstanceState);
 
 		soundplay = new soundPlayer(this);
@@ -61,7 +62,6 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
 		framelayout.addView(imageViewCamera);
 		
 		pen = new penView(this);
-		//pen.changeColor(Color.BLACK);
 		
 		framelayout.addView(pen);
 		
@@ -120,21 +120,31 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
 	
     
     public void onPause(){
+		Log.i(TAG,"onPause");
 		super.onPause();
     	soundplay.stopMusic();
     }
     
     public void onResume(){
+		Log.i(TAG,"onResume");
 		super.onResume();
 
     }
     
+	@Override
+	public boolean onTouchEvent(MotionEvent e){
+		Log.i(TAG,"onTouchActivity");
+		return true;
+	}
+	
 	static final int REQUEST_CODE_CAPTURE_IMAGE = 100;		//識別用定義
 
 	/**
 	 * ボタン押されたとき
 	 */
+	@Override
     public void onClick(View v) {
+		Log.i(TAG,"onClick");
         if (v == button1){
         	pen.clearPaint();
         	soundplay.startSound(1);
@@ -182,6 +192,7 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
      * アニメーション関連
      */
     private void settingAnimation(){
+		Log.i(TAG,"settingAnimation");
 		animeSet = new AnimationSet(true);
 
 //	    AlphaAnimation alpha = new AlphaAnimation(0.9f, 0.2f);			//フェード
@@ -198,13 +209,15 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
     }
     
 	@Override
-	   public void onAnimationStart(Animation animation) {
+	public void onAnimationStart(Animation animation) {
+		Log.i(TAG,"onAnimationStart");
 			if(soundOnOff) soundplay.startMusic();
 			button7.setText("とめる");
 	  }
 	
 	@Override
     public void onAnimationEnd(Animation arg0) {
+		Log.i(TAG,"onAnimationEnd");
     	soundplay.stopMusic();
 		button7.setText("うごく");
 		pen.update();
@@ -212,6 +225,7 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
 
 	@Override
    public void onAnimationRepeat(Animation animation) {
+		Log.i(TAG,"onAnimationRepeat");
    }
    
     /**
