@@ -29,6 +29,9 @@ public class penView extends View {
 //	private Bitmap bitmapKeshigomIcon= null;
 	private Paint Keshipaint;
 
+	public Bitmap getBitmap(){
+		return this.bitmapCache;
+	}
 	/**
 	 * 描画用Paintインスタンスの諸設定
 	 * 消しゴム用Paintインスタンスの諸設定

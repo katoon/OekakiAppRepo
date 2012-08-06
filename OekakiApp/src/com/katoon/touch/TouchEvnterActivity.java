@@ -1,11 +1,16 @@
 package com.katoon.touch;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,6 +18,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -33,6 +39,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class TouchEvnterActivity extends Activity implements OnClickListener, AnimationListener{
 	private static final String TAG = "TouchEvnterActivity";
@@ -42,11 +49,18 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
 	private penView pen;
     
 	 private soundPlayer soundplay;
-	 private boolean soundOnOff = true;
+//	 private boolean soundOnOff = true;
 	 AnimationSet animeSet;
 	 
 	FrameLayout framelayout;
-
+	
+	/*
+	private Activity _context;
+	public TouchEvnterActivity(Context context){
+		super(context);
+		 _context = (Activity)context;
+	}
+*/
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG,"onCreate");
@@ -211,7 +225,8 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
 	@Override
 	public void onAnimationStart(Animation animation) {
 		Log.i(TAG,"onAnimationStart");
-			if(soundOnOff) soundplay.startMusic();
+			//if(soundOnOff) soundplay.startMusic();
+			soundplay.startMusic();
 			button7.setText("とめる");
 	  }
 	
@@ -249,7 +264,7 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
     public boolean onCreateOptionsMenu(Menu menu) {
         // メニューアイテムを追加します
         menu.add(Menu.NONE, MENU_ID_MENU1, Menu.NONE, "PHOTO");
-        menu.add(Menu.NONE, MENU_ID_MENU2, Menu.NONE, "SOUND OFF");
+        menu.add(Menu.NONE, MENU_ID_MENU2, Menu.NONE, "SAVE");
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -258,6 +273,7 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
     public boolean onPrepareOptionsMenu(Menu menu) {
     //    menu.findItem(MENU_ID_MENU2).setVisible(visible);
     //    visible = !visible;
+    	/*
     	String menu2;
     	if(soundOnOff){
     		menu2 = "SOUND OFF";
@@ -265,6 +281,7 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
     		menu2 = "SOUND ON";
     	}
     	menu.findItem(MENU_ID_MENU2).setTitle(menu2);
+    	*/
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -282,15 +299,88 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
             ret = true;
             break;
         case MENU_ID_MENU2:
-        	soundOnOff = !soundOnOff;
+        	saveBitmapToSd(pen.getBitmap());
+        	//soundOnOff = !soundOnOff;
         	//button3.setTextColor(soundOnOff ? Color.BLACK : Color.GRAY);
+        	/*
         	if(!soundOnOff){
         		soundplay.stopMusic();
         	}
+        	*/
             ret = true;
             break;
         }
         return ret;
     }
+    
+    /**
+     * SDカードフォルダに日付名のファイルで画像イメージを保存する
+     * @param mBitmap
+     */
+    public void saveBitmapToSd(Bitmap mBitmap) {
+    	/*
+    	 try {
+    	 // sdcardフォルダを指定
+    	 File root = Environment.getExternalStorageDirectory();
+
+    	 // 日付でファイル名を作成　
+    	 Date mDate = new Date();
+    	 SimpleDateFormat fileName = new SimpleDateFormat("yyyyMMdd_HHmmss");
+
+    	 // 保存処理開始
+    	 FileOutputStream fos = null;
+    	 fos = new FileOutputStream(new File(root, fileName.format(mDate) + ".jpg"));
+
+    	 // jpegで保存
+    	 mBitmap.compress(CompressFormat.JPEG, 100, fos);
+
+    	 // 保存処理終了
+    	 fos.close();
+    	 } catch (Exception e) {
+    	 Log.e("Error", "" + e.toString());
+    	 }
+    	}
+    public void saveToFile(){
+    */
+
+    	 if(!sdcardWriteReady()){
+	    	 Toast.makeText(getBaseContext(), "SDcardが認識されません。", Toast.LENGTH_SHORT).show();
+	    	 return;
+    	 }
+    	 
+    	 File file = new File(Environment.getExternalStorageDirectory().getPath()+"/drawbm/");
+    	 
+    	 try{
+	    	 if(!file.exists()){
+	    		 file.mkdir();
+	    	 }
+    	 }catch(SecurityException e){
+        	 Log.e("Error", "" + e.toString());
+    	 }
+    	 
+    	 String AttachName = file.getAbsolutePath() + "/";
+    	 AttachName += System.currentTimeMillis()+".jpg";
+    	 File saveFile = new File(AttachName);
+
+    	 while(saveFile.exists()) {
+	    	 AttachName = file.getAbsolutePath() + "/" + System.currentTimeMillis() +".jpg";
+	    	 saveFile = new File(AttachName);
+    	 }
+    	 
+    	 try {
+	    	 FileOutputStream out = new FileOutputStream(AttachName);
+	    	 mBitmap.compress(CompressFormat.JPEG, 100, out);
+	    	 out.flush();
+	    	 out.close();
+	    	 Toast.makeText(getBaseContext(), "保存されました。", Toast.LENGTH_SHORT).show();
+    	 } catch(Exception e) {
+    		 Toast.makeText(getBaseContext(), "例外発生", Toast.LENGTH_SHORT).show();
+    	 }
+    }
+
+   	 private boolean sdcardWriteReady(){
+	   	 String state = Environment.getExternalStorageState();
+	   	 return (Environment.MEDIA_MOUNTED.equals(state));
+     }
 }
 
