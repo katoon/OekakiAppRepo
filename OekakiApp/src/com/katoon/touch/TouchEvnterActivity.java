@@ -258,6 +258,7 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
     
     private static final int MENU_ID_MENU1 = (Menu.FIRST + 1);
     private static final int MENU_ID_MENU2 = (Menu.FIRST + 2);
+    private static final int MENU_ID_MENU3 = (Menu.FIRST + 3);
  //   private boolean visible = true;
     // オプションメニューが最初に呼び出される時に1度だけ呼び出されます
     @Override
@@ -265,6 +266,7 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
         // メニューアイテムを追加します
         menu.add(Menu.NONE, MENU_ID_MENU1, Menu.NONE, "PHOTO");
         menu.add(Menu.NONE, MENU_ID_MENU2, Menu.NONE, "SAVE");
+        menu.add(Menu.NONE, MENU_ID_MENU3, Menu.NONE, "BT");
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -309,6 +311,12 @@ public class TouchEvnterActivity extends Activity implements OnClickListener, An
         	*/
             ret = true;
             break;
+        case MENU_ID_MENU3:
+        	Intent i = new Intent(getApplicationContext(),BluetoothControler.class);
+        	startActivity(i);
+        	ret = true;
+            break;
+
         }
         return ret;
     }
